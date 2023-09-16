@@ -1,0 +1,39 @@
+lua
+_G.AutoKill = true -- freeze in inf yield ig
+-- will lag alot
+while _G.AutoKill and task.wait(0.05) do
+    spawn(function()
+        for _, tool in ipairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
+            if tool:IsA("Tool") and game:GetService("Players").LocalPlayer.Character then
+              wait(1)
+                tool.Parent = game:GetService("Players").LocalPlayer.Character
+            end
+        end
+    end)
+    
+    task.spawn(function()
+        local closestMonster = nil
+        local closestDistance = math.huge 
+        
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool") then
+            
+            for i,v in pairs(workspace.Monsters:GetChildren()) do
+                if v and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChildOfClass("Humanoid") and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then
+                    local distance = (v:WaitForChild("HumanoidRootPart").Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).magnitude
+                    if distance < closestDistance then
+                        closestDistance = distance
+                        closestMonster = v
+                    end
+                end
+            end
+            
+            if closestMonster and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool")  then
+                repeat
+                    game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool"):Activate()
+                    game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Position = closestMonster:WaitForChild("HumanoidRootPart").Position
+                    task.wait()
+                until not closestMonster or (closestMonster and closestMonster:FindFirstChildOfClass("Humanoid") and closestMonster.Humanoid.Health == 0 ) 
+            end
+        end
+    end)
+end
