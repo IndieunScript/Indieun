@@ -1,6 +1,4 @@
-lua
-_G.AutoKill = true -- freeze in inf yield ig
--- will lag alot
+_G.AutoKill = true
 while _G.AutoKill and task.wait(0.05) do
     spawn(function()
         for _, tool in ipairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
