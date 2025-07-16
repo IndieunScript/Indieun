@@ -6,10 +6,9 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local ringsFolder = workspace.FlightChallenge.Challenges.Hard.Rings
 
 local tweenTime = 0.05
-local forwardOffset = 20
-local backwardOffset = -20
-local delayBetweenRings = 0.3
-local passesPerRing = 3 -- ✅ number of back and forth motions per ring
+local offset = 20
+local delayBetweenRings = 0.1
+local passesPerRing = 3
 
 -- Tween helper
 local function tweenTo(cframe)
@@ -19,22 +18,25 @@ local function tweenTo(cframe)
 	tween.Completed:Wait()
 end
 
--- Go through all 49 rings
+-- Loop through rings
 for i = 1, 49 do
 	local ring = ringsFolder:FindFirstChild(tostring(i))
 	if ring and ring:IsA("BasePart") then
 		local ringCFrame = ring.CFrame
+		local backward = ringCFrame + ringCFrame.LookVector * -offset
+		local forward = ringCFrame + ringCFrame.LookVector * offset
 
-		local backCFrame = ringCFrame + ringCFrame.LookVector * backwardOffset
-		local forwardCFrame = ringCFrame + ringCFrame.LookVector * forwardOffset
+		-- ✅ Step 1: TP to center of the ring
+		humanoidRootPart.CFrame = ringCFrame
+		wait(0.05)
 
-		-- Start at the back position
-		humanoidRootPart.CFrame = backCFrame
+		-- ✅ Step 2: Tween back 20 studs
+		tweenTo(backward)
 
-		-- ✅ Repeat the forward/backward tween 3 times
+		-- ✅ Step 3: Tween back and forth 3 times
 		for _ = 1, passesPerRing do
-			tweenTo(forwardCFrame)
-			tweenTo(backCFrame)
+			tweenTo(forward)
+			tweenTo(backward)
 		end
 	else
 		warn("Ring " .. i .. " not found or not a BasePart!")
