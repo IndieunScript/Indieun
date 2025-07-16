@@ -1,0 +1,43 @@
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local ringsFolder = workspace.FlightChallenge.Challenges.Hard.Rings
+
+local tweenTime = 0.05
+local forwardOffset = 20
+local backwardOffset = -20
+local delayBetweenRings = 0.3
+local passesPerRing = 3 -- ✅ number of back and forth motions per ring
+
+-- Tween helper
+local function tweenTo(cframe)
+	local tweenInfo = TweenInfo.new(tweenTime, Enum.EasingStyle.Linear)
+	local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = cframe})
+	tween:Play()
+	tween.Completed:Wait()
+end
+
+-- Go through all 49 rings
+for i = 1, 49 do
+	local ring = ringsFolder:FindFirstChild(tostring(i))
+	if ring and ring:IsA("BasePart") then
+		local ringCFrame = ring.CFrame
+
+		local backCFrame = ringCFrame + ringCFrame.LookVector * backwardOffset
+		local forwardCFrame = ringCFrame + ringCFrame.LookVector * forwardOffset
+
+		-- Start at the back position
+		humanoidRootPart.CFrame = backCFrame
+
+		-- ✅ Repeat the forward/backward tween 3 times
+		for _ = 1, passesPerRing do
+			tweenTo(forwardCFrame)
+			tweenTo(backCFrame)
+		end
+	else
+		warn("Ring " .. i .. " not found or not a BasePart!")
+	end
+	wait(delayBetweenRings)
+end
