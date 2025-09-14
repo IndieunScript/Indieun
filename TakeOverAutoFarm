@@ -1,0 +1,56 @@
+-- Run this code first
+local args = {
+    "3310460039_Medium_1",
+    2
+}
+game:GetService("ReplicatedStorage"):WaitForChild("PlatformEventEvents"):WaitForChild("PlayButtonClicked"):FireServer(unpack(args))
+
+-- Wait 0.5 seconds
+wait(0.5)
+
+-- Go to position 1
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+humanoidRootPart.CFrame = CFrame.new(-501, 43, 31)
+
+-- Wait 0.5 seconds
+wait(0.5)
+
+-- Go to position 2
+humanoidRootPart.CFrame = CFrame.new(-509, 43, 136)
+
+-- Wait 0.5 seconds before autoclicking
+wait(0.5)
+
+-- Autoclick (simple implementation)
+local UserInputService = game:GetService("UserInputService")
+local isAutoClicking = true
+local clickInterval = 0.05 -- Adjust this value to change the click speed (lower = faster)
+
+local function simulateClick()
+    UserInputService:MouseButton1Click()
+end
+
+--Start the autoclicker in a separate coroutine so it doesn't block the rest of the script.
+local autoclickCoroutine
+
+autoclickCoroutine = coroutine.create(function()
+    while isAutoClicking do
+        simulateClick()
+        wait(clickInterval)
+    end
+end)
+
+coroutine.resume(autoclickCoroutine)
+
+-- Wait until its time to rejoin (20 seconds after autoclicking starts)
+wait(20)
+
+-- Stop autoclicking
+isAutoClicking = false
+coroutine.close(autoclickCoroutine) -- Ensure the coroutine is stopped.
+
+-- Rejoin the server
+game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
